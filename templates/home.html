@@ -1,124 +1,12 @@
-{% load static %}
+		{% extends 'base.html' %}
+		{% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>FoodOnline</title>
-	<!-- Google Font Family Link Start -->
-	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
-	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800">
-	<!-- Google Font Family Link End -->
-
-	<!-- CSS -->
-	<link href="{% static 'css/iconmoon.css' %}" rel="stylesheet">
-	<link href="{% static 'css/style.css' %}" rel="stylesheet">
-	<link href="{% static 'css/cs-foodbakery-plugin.css' %}" rel="stylesheet">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<link href="{% static 'css/bootstrap-slider.css' %}" rel="stylesheet">
-	
-	<!-- JAVASCRIPT -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script src="{% static 'js/modernizr.js' %}"></script>
-	<script src="{% static 'js/bootstrap.js' %}"></script>
-
-	<style>
-		body, .main-section p, .mce-content-body p{
-			font:Normal  14px/24px "Open Sans", sans-serif;letter-spacing: 0px;text-transform: none;color: #515151 !important;
-		}
-	</style>
-</head>
-
-<body>
-	<!--Main Wrapper-->
-	<div class="wrapper">
-		<!-- Header Start -->
-		<header id="header">
-			<div class="main-header">
-				<div class="container">
-					<div class="row">
-						<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-							<div class="logo">
-								<figure>
-									<a href="index.html" class="light-logo">
-										<img src="{% static 'extra-images/main-logo.png' %}" alt="FoodBakery">
-									</a>
-								</figure>
-							</div>
-							<div class="main-nav">
-									<nav id="site-navigation" class="main-navigation">
-										<ul>
-											<li>
-												<a href="#">Demos</a>
-												<ul>
-													<li><a href="index.html">Food Bakery</a></li>
-													<li><a href="mexican-restaurant.html">Mexican Restaurant</a></li>
-													<li><a href="foodstop.html">Food Stop</a></li>
-													<li><a href="rtl.html">Rtl Demo</a></li>
-													<li><a href="food-cout.html">Food Court</a></li>
-													<li><a href="single-restaurant.html">Single Restaurant Demo</a></li>
-												</ul>
-												<!--End Sub Menu -->
-											</li>
-											<li><a href="listings.html">Restaurants</a></li>
-											<li>
-												<a href="#">Pages</a>
-												<ul>
-													<li><a href="price-plans.html">Price Plans</a></li>
-													<li><a href="how-it-works.html">How it works</a></li>
-													<li><a href="faq.html">FAQ’s</a></li>
-													<li><a href="404.html">404</a></li>
-													<li><a href="search-result.html">Search Result</a></li>
-													<li><a href="contact-us.html">Contact</a></li>
-												</ul>
-												<!--End Sub Menu -->
-											</li>
-											<li>
-												<a href="#">Blogs</a>
-												<ul>
-													<li><a href="blog-large.html">Blog Large</a></li>
-													<li><a href="blog-medium.html">Blog Medium</a></li>
-													<li><a href="blog-masonry.html">Blog Masonry</a></li>
-													<li><a href="blog-detail.html">Blog Detail Page</a></li>
-												</ul>
-												<!--End Sub Menu -->
-											</li>
-										</ul>
-									</nav><!-- .main-navigation -->
-								</div>
-							
-							<div class="main-location">
-								<ul>
-									<li class="location-has-children choose-location">
-										<form action="#">
-											<input type="text" value="" name="location" placeholder="Enter your delivery location" autocomplete="off">
-											<span id="foodbakery_radius_location_open" class="foodbakery-radius-location"><i class="icon-target5"></i></span>
-										</form>
-										
-									</li>
-								</ul>
-								</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-							<div class="login-option">
-								<a class="cs-color cs-popup-joinus-btn login-popup" data-target="#sign-in" data-toggle="modal" href="#user-register">Login / Register</a><a class="get-start-btn" href="register-restaurant.html">
-									Register
-									Restaurant </a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</header>
-		<!-- Header End -->
+		{% block content %}
 		<!-- Main Section Start -->
 		<div class="main-section">
 			<!-- Home Pages Elements Strat -->
 			<!-- Main Search Start -->
-			<div class="page-section nopadding cs-nomargin" style="padding-top: 200px; padding-bottom: 150px; margin-bottom: 0px; background: url(assets/extra-images/bg-image1.jpg) no-repeat center / cover;">
+			<div class="page-section nopadding cs-nomargin" style="padding-top: 200px; padding-bottom: 150px; margin-bottom: 0px; background: url({% static 'extra-images/bg-image1.jpg' %}) no-repeat center / cover;">
 				<div class="container">
 					<div class="row">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
@@ -217,7 +105,7 @@
 								<p>Explore restaurants, bars, and cafés by locality</p>
 							</div>
 						</div>
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-right: 0 !important; padding-left: 0 !important;">
 							<div class="company-logo">
 								<ul>
 									<li class="has-border">
@@ -349,55 +237,4 @@
 			<!-- Home Pages Elements End  -->
 		</div>
 		<!-- Main Section End -->
-		<!-- Footer Start -->
-		<footer id="footer" class="footer-style-2">
-			<div class="footer-widget">
-				<div class="container">
-					<div class="row">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="widget widget-newsletter">
-								<div class="widget-title">
-									<h5>Subscribe to our Newsletter</h5>
-								</div>
-								<div class="fieldset">
-									<form action="#">
-										<div class="field-holder">
-											<label>
-												<i class=" icon-envelope3"></i>
-												<input type="text" class="field-input" placeholder=" Enter Your Email Address...">
-											</label>
-										</div>
-										<div class="field-holder btn-holder">
-											<input class="subscribe-btn bgcolor" type="submit" value="Sign Up">
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="copyright-sec">
-				<div class="container">
-					<div class="row">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="copyright-inner">
-								<div class="copy-right">
-									<p>© 2020 Foodbakery. All Rights Reserved. Developed By <a href="#">Rathan Kumar</a>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div> <!-- /.cs-copyright -->
-		</footer>
-		<!-- Footer End -->
-	</div>
-	
-	<!-- Modal Popup End -->
-	<script src="{% static 'js/scripts.js' %}"></script>
-	<script src="{% static 'js/functions.js' %}"></script>
-</body>
-
-</html>
+		{% endblock %}
