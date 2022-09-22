@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h4>Welcome {{user.username}} to FoodOnline Dashboard</h4>
+<p>You are a {{user.get_role}}</p>
+
+{% include 'includes/alerts.html' %}
+
+{% endblock %}
