@@ -3,7 +3,7 @@ from unicodedata import category
 from django.shortcuts import render,get_object_or_404,redirect
 
 from accounts.models import UserProfile
-from menu.forms import CategoryForm
+from menu.forms import CategoryForm, FoodItemForm
 import vendor
 from vendor.models import Vendor
 from .forms import VendorForm
@@ -82,7 +82,8 @@ def fooditems_by_category(request,pk=None):
     }
     return render(request,'vendor/fooditems_by_category.html',context)
 
-
+@login_required
+@user_passes_test(check_role_vendor)
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -104,7 +105,8 @@ def add_category(request):
     }
     return render(request,'vendor/add_category.html',context)
 
-
+@login_required
+@user_passes_test(check_role_vendor)
 def edit_category(request, pk=None):
     #get the category instance and pass it in the form.
     category = get_object_or_404(Category, pk=pk) # this is the pk from edit url of the menu builder html
@@ -129,10 +131,79 @@ def edit_category(request, pk=None):
     }
     return render(request,'vendor/edit_category.html',context)
 
-
+@login_required
+@user_passes_test(check_role_vendor)
 def delete_category(request,pk=None):
     category = get_object_or_404(Category, pk=pk) #pk received from the delete url in menu builder html
     category.delete()
     messages.success(request, 'Category deleted successfully!')
     return redirect('menu_builder')
+
+@login_required
+@user_passes_test(check_role_vendor)
+def add_food(request):
+    if request.method == 'POST':
+        form = FoodItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            # handle the vendor and the slug which the user is not providing but needed in DB programatically
+            foodtitle = form.cleaned_data['food_title']  #get category name from user input
+            food = form.save(commit=False)
+            food.vendor = get_vendor(request)
+            food.slug = slugify(foodtitle) #import slugify from django.template.defaultfilters 
+            form.save()
+            messages.success(request, 'Food Item Added successfully!')
+            return redirect('fooditems_by_category',food.category.id) #nb: food by category accepts pk
+        else:
+            print(form.errors)
+    else:
+        form =FoodItemForm()
+        # modify this form qury set
+        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
+    # send the form content to the html using the context
+    context = {
+        'form': form,
+    }
+
+    return render(request,'vendor/add_food.html',context)
+
+
+@login_required
+@user_passes_test(check_role_vendor)
+def edit_food(request, pk=None):
+    #get the category instance and pass it in the form.
+    food = get_object_or_404(FoodItem, pk=pk) # this is the pk from edit url of the menu builder html
+    if request.method == 'POST':
+        form = FoodItemForm(request.POST, request.FILES, instance=food)
+        if form.is_valid():
+            # handle the vendor and the slug which the user is not providing but needed in DB programatically
+            foodtitle = form.cleaned_data['food_title']  #get food name from user input
+            food = form.save(commit=False)
+            food.vendor = get_vendor(request)
+            food.slug = slugify(foodtitle) #import slugify from django.template.defaultfilters 
+            form.save()
+            messages.success(request, 'Food Item updated successfully!')
+            return redirect('fooditems_by_category',food.category.id)
+        else:
+            print(form.errors)
+    else:
+        form = FoodItemForm(instance=food) # import from menu.forms
+        # modify this form qury set
+        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
+    context = {
+        'form': form,
+        'food': food,
+    }
+    return render(request,'vendor/edit_food.html',context)
+
+
+@login_required
+@user_passes_test(check_role_vendor)
+def delete_food(request,pk=None):
+    food = get_object_or_404(FoodItem, pk=pk) #pk received from the delete url in menu builder html
+    food.delete()
+    messages.success(request, 'Food Item has been deleted successfully!')
+    return redirect('fooditems_by_category',food.category.id)
+
+
+
 
