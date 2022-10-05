@@ -12,6 +12,7 @@ from django.contrib.auth.tokens import default_token_generator
 
 from django.core.exceptions import PermissionDenied
 from vendor.models import Vendor
+from django.template.defaultfilters import slugify
 
 
 # Create your views here.
@@ -86,7 +87,7 @@ def registerUser(request):
 def registerVendor(request):
     if request.user.is_authenticated:
         messages.warning(request,'You are already logged in!')
-        return redirect('dashboard')  #we will enter my account url here instead of dashboard later.
+        return redirect('myAccount')  #we will enter my account url here instead of dashboard later.
     elif request.method == 'POST':
         form = UserForm(request.POST)
         v_form = VendorForm(request.POST, request.FILES)
@@ -101,6 +102,11 @@ def registerVendor(request):
             user.save()
             vendor = v_form.save(commit=False)
             vendor.user = user
+            # sluggify the vendor name automatically
+            vendor_name = v_form.cleaned_data['vendor_name']
+
+            # concatenate the slugify name and userid to avoid any error if diff vendors use same name
+            vendor.vendor_slug = slugify(vendor_name)+'-'+str(user.id) #import slugify from django.template.defaultfilters
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
