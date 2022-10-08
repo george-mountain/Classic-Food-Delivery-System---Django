@@ -92,8 +92,12 @@ def add_category(request):
             category_name = form.cleaned_data['category_name']  #get category name from user input
             category = form.save(commit=False)
             category.vendor = get_vendor(request)
-            category.slug = slugify(category_name) #import slugify from django.template.defaultfilters 
-            form.save()
+            
+            category.save() # The category ID will be generated here
+
+            #append the category id to the category slug as shown below.
+            category.slug = slugify(category_name)+'-'+str(category.id) #import slugify from django.template.defaultfilters 
+            category.save()
             messages.success(request, 'Category created successfully!')
             return redirect('menu_builder')
         else:
@@ -149,8 +153,10 @@ def add_food(request):
             foodtitle = form.cleaned_data['food_title']  #get category name from user input
             food = form.save(commit=False)
             food.vendor = get_vendor(request)
-            food.slug = slugify(foodtitle) #import slugify from django.template.defaultfilters 
-            form.save()
+            
+            food.save()
+            food.slug = slugify(foodtitle)+'-'+str(food.id) #import slugify from django.template.defaultfilters 
+            food.save()
             messages.success(request, 'Food Item Added successfully!')
             return redirect('fooditems_by_category',food.category.id) #nb: food by category accepts pk
         else:

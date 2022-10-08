@@ -29,4 +29,9 @@ urlpatterns = [
 
     # CART PAGE url
     path('cart/', MarketplaceViews.cart, name='cart'), #import our cart view from market place
+
+    # SEARCH url
+    path('search/', MarketplaceViews.search, name='search'), #import our search view from market place
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
