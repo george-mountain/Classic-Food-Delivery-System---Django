@@ -111,7 +111,7 @@ $(document).ready(function(){
                         // subtotal, tax and grand total: call the helper function
                         applyCartAmounts(
                             response.cart_amount['subtotal'],
-                            response.cart_amount['tax'],
+                            response.cart_amount['tax_dict'],
                             response.cart_amount['grand_total']
                         )
 
@@ -167,7 +167,7 @@ $(document).ready(function(){
                 // subtotal, tax and grand total: call the helper function
                 applyCartAmounts(
                     response.cart_amount['subtotal'],
-                    response.cart_amount['tax'],
+                    response.cart_amount['tax_dict'],
                     response.cart_amount['grand_total']
                 )
 
@@ -212,7 +212,7 @@ $(document).ready(function(){
                 // subtotal, tax and grand total: call the helper function
                 applyCartAmounts(
                     response.cart_amount['subtotal'],
-                    response.cart_amount['tax'],
+                    response.cart_amount['tax_dict'],
                     response.cart_amount['grand_total']
                 )
                 // call the helper function
@@ -243,12 +243,18 @@ $(document).ready(function(){
     }
 
     // function to apply cart amounts dynamically on the cart html page
-    function applyCartAmounts(subtotal,tax,grand_total){
+    function applyCartAmounts(subtotal,tax_dict,grand_total){
         // Run this function if the user is on the cart page
         if(window.location.pathname == '/cart/'){
             $('#subtotal').html(subtotal)
-            $('#tax').html(tax)
             $('#total').html(grand_total)
+
+            for(key1 in tax_dict){
+                console.log(tax_dict[key1])
+                for(key2 in tax_dict[key1]){
+                    $('#tax-'+key1).html(tax_dict[key1][key2])
+                }
+            }
         }
 
         
