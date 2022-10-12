@@ -19,8 +19,11 @@ urlpatterns = [
     path('reset_password_validate/<uidb64>/<token>/', views.reset_password_validate, name='reset_password_validate'),
     path('reset_password/', views.reset_password, name='reset_password'),
 
-    #the path below will forwardt the request to the vendor app.
-    path('vendor/', include('vendor.urls')) #import include from django.urls 
+    #the path below will forward the request to the vendor app.
+    path('vendor/', include('vendor.urls')), #import include from django.urls 
+
+    # forward to the customer app
+     path('customer/', include('customers.urls')),
 
 
    
