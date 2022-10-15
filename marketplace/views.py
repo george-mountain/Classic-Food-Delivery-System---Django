@@ -1,6 +1,8 @@
 from django.shortcuts import render,get_object_or_404
+from accounts.models import UserProfile
 from marketplace.context_processors import get_cart_amounts, get_cart_counter
 from menu.models import Category, FoodItem
+from orders.forms import OrderForm
 from vendor.models import Vendor, OpeningHour
 from django.db.models import Prefetch
 from django.http.response import HttpResponse, JsonResponse
@@ -188,6 +190,35 @@ def search(request):
     
     
         return render(request,'marketplace/listings.html',context)
+
+@login_required(login_url='login')
+def checkout(request):
+    # To have access to the cart items
+    cart_items = Cart.objects.filter(user=request.user).order_by('created_at')
+    cart_count = cart_items.count()
+    if cart_count <=0:
+        return redirect('marketplace')
+    
+    # prepopulating billing address form on checkout page
+    user_profile = UserProfile.objects.get(user=request.user)
+    default_values = {
+        'first_name':request.user.first_name,
+        'last_name':request.user.last_name,
+        'phone':request.user.phone_number,
+        'email':request.user.email,
+        'address':user_profile.address,
+        'country':user_profile.country,
+        'state':user_profile.state,
+        'city':user_profile.city,
+        'pin_code':user_profile.pin_code,
+    }
+    form = OrderForm(initial=default_values)  #import OrderForm from orders.form
+    context = {
+        'form':form,
+        'cart_items':cart_items,
+        
+    }
+    return render(request, 'marketplace/checkout.html',context)
         
 
     

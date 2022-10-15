@@ -1,0 +1,9 @@
+{% autoescape off %}
+
+Hello {{user.first_name}},
+
+Thank you for Ordering with us
+Your Order number: {{ order.order_number }}
+transaction ID: {{ order.payment.transaction_id }}
+
+{% endautoescape %}

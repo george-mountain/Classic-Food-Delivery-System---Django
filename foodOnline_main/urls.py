@@ -33,5 +33,11 @@ urlpatterns = [
     # SEARCH url
     path('search/', MarketplaceViews.search, name='search'), #import our search view from market place
 
+     # CHECKOUT url
+    path('checkout/', MarketplaceViews.checkout, name='checkout'),
+
+     # Place Order url
+    path('orders/', include('orders.urls')),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

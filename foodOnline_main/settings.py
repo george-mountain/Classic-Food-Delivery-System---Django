@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'marketplace',
     'django.contrib.gis',
     'customers',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -73,10 +74,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.get_vendor', #get vendor context processor
-                'accounts.context_processors.get_google_api',
+                'accounts.context_processors.get_google_api', # google api context processor
                 'marketplace.context_processors.get_cart_counter', # cart counter context processor
                 'marketplace.context_processors.get_cart_amounts', # cart amount context processor
                 'accounts.context_processors.get_user_profile', # get customer context processor
+                'accounts.context_processors.get_paypal_client_id', # paypal client id context processor
             ],
         },
     },
@@ -168,7 +170,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <engrmountain@gmail.com>'
 
 
-GOOGLE_API_KEY = 'AIzaSyAZ4-8UFWH_vF76IxqctyKCIffPz7zUfus'
+GOOGLE_API_KEY = config('GOOGLE_API_KEY')
 
 
 # GDAL Libraries
@@ -176,3 +178,11 @@ GOOGLE_API_KEY = 'AIzaSyAZ4-8UFWH_vF76IxqctyKCIffPz7zUfus'
 os.environ['PATH'] = os.path.join(BASE_DIR, 'webappenv\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
 os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'webappenv\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
 GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'webappenv\Lib\site-packages\osgeo\gdal304.dll')
+
+
+# Paypal credentials
+
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+
+# fix browser pop issue due to secure opener policy
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
