@@ -3,8 +3,9 @@ from urllib import response
 from django.shortcuts import render, redirect
 
 from django.http import HttpResponse, JsonResponse
-from marketplace.models import Cart
+from marketplace.models import Cart, Tax
 from marketplace.context_processors import get_cart_amounts
+from menu.models import FoodItem
 from orders.forms import OrderForm
 from orders.models import Order, OrderedFood, Payment
 import simplejson as json # install simplejson via pip
@@ -21,6 +22,42 @@ def place_order(request):
     if cart_count <=0:
         return redirect('marketplace')
     
+    # retrieve vendor ids in the order and assign to vendor field (many to many vendor field)
+    vendors_ids = []
+    for i in cart_items:
+        if i.fooditem.vendor.id not in vendors_ids:
+            vendors_ids.append(i.fooditem.vendor.id)
+    
+
+    #  loop through the cart item, and get price  tax info for each vendor in the cart item.
+    get_tax = Tax.objects.filter(is_active=True)
+    subtotal = 0
+    total_data = {}
+    k = {}
+    for i in cart_items:
+        fooditem = FoodItem.objects.get(pk=i.fooditem.id, vendor_id__in=vendors_ids)
+        v_id = fooditem.vendor.id
+        if v_id in k:
+            subtotal = k[v_id]
+            subtotal += (fooditem.price * i.quantity)
+            k[v_id] = subtotal
+        else:
+            subtotal = (fooditem.price * i.quantity )
+            k[v_id] = subtotal
+        
+        #  calculate the tax_data corresponding to each vendor
+        tax_dict = {}
+        for i in get_tax:
+            tax_type = i.tax_type
+            tax_percentage = i.tax_percentage
+            tax_amount = round((tax_percentage * subtotal)/100,2)
+            tax_dict.update({tax_type: {str(tax_percentage): str(tax_amount)}})
+        
+        #  construct total data in the JSON format
+        total_data.update({fooditem.vendor.id: {str(subtotal): str(tax_dict)}})
+
+    
+    #  price calculation for the given order
     subtotal = get_cart_amounts(request)['subtotal']
     total_tax = get_cart_amounts(request)['tax']
     grand_total = get_cart_amounts(request)['grand_total']
@@ -43,12 +80,15 @@ def place_order(request):
             order.total = grand_total
             # convert tax data to json format to avoid errors (Decimal) due to serialization
             # But when we will retrive that from db, we will use json load
-            order.tax_data = json.dumps(tax_data) 
+            order.tax_data = json.dumps(tax_data)
+            # store the JSON data of each vendor price and tax
+            order.total_data = json.dumps(total_data) 
             order.total_tax = total_tax
             order.payment_method = request.POST['payment_method']
 
             order.save() # order id/pk is generated once the order is saved
             order.order_number = generate_order_number(order.id) #order.id is the primary key of order
+            order.vendors.add(*vendors_ids) # add the vendor ids in the order to the many to many fields.
             order.save()
             context = {
                 'order':order,

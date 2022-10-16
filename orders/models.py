@@ -1,8 +1,11 @@
+import json
+from urllib import request
 from django.db import models
 from accounts.models import User
 from menu.models import FoodItem
+from vendor.models import Vendor
 
-
+request_object = ''
 class Payment(models.Model):
     PAYMENT_METHOD = (
         ('PayPal', 'PayPal'),
@@ -29,6 +32,7 @@ class Order(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
+    vendors = models.ManyToManyField(Vendor, blank=True) # For vendor many to many relationship
     order_number = models.CharField(max_length=20)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -40,7 +44,8 @@ class Order(models.Model):
     city = models.CharField(max_length=50)
     pin_code = models.CharField(max_length=10)
     total = models.FloatField()
-    tax_data = models.JSONField(blank=True, help_text = "Data format: {'tax_type':{'tax_percentage':'tax_amount'}}")
+    tax_data = models.JSONField(blank=True, help_text = "Data format: {'tax_type':{'tax_percentage':'tax_amount'}}",null=True)
+    total_data = models.JSONField(blank=True, null=True) # for many to many relationship
     total_tax = models.FloatField()
     payment_method = models.CharField(max_length=25)
     status = models.CharField(max_length=15, choices=STATUS, default='New')
@@ -52,6 +57,40 @@ class Order(models.Model):
     @property
     def name(self):
         return f'{self.first_name} {self.last_name}'
+    
+    # dispay all vendors in the many to many relationship of a given order in admin panel
+    def order_placed_to(self):
+        return ", ".join([str(i) for i in self.vendors.all()])
+    
+
+    #  function to get total order per vendor
+    def get_total_by_vendor(self):
+        vendor = Vendor.objects.get(user=request_object.user)
+        subtotal = 0
+        tax = 0
+        tax_dict = {}
+        if self.total_data:
+            total_data = json.loads(self.total_data)
+            data = total_data.get(str(vendor.id))
+           
+            for key,val in data.items():
+                subtotal += float(key)
+                val = val.replace("'",'"')
+                val = json.loads(val)
+                tax_dict.update(val)
+
+                # calculate the tax per vendor now
+                # {'CGST':{'6.00': '4.43'},'SGST':{'5.34':'2.66'}} this is how the tax data looks like
+                for i in val:
+                    for j in val[i]:
+                        tax += float(val[i][j])
+        grand_total = float(subtotal) + float(tax)
+        context = {
+            'subtotal': subtotal,
+            'tax_dict': tax_dict,
+            'grand_total': grand_total,
+        }
+        return context
 
     def __str__(self):
         return self.order_number

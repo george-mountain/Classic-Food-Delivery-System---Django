@@ -5,6 +5,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.http.response import HttpResponse, JsonResponse
 from accounts.models import UserProfile
 from menu.forms import CategoryForm, FoodItemForm
+from orders.models import Order, OrderedFood
 import vendor
 from vendor.models import OpeningHour, Vendor
 from .forms import VendorForm, OpeningHourForm
@@ -15,6 +16,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import check_role_vendor
 from menu.models import Category, FoodItem
 from django.template.defaultfilters import slugify
+
 
 def get_vendor(request):
     vendor = Vendor.objects.get(user=request.user)
@@ -258,7 +260,38 @@ def remove_opening_hours(request,pk=None):
             hour = get_object_or_404(OpeningHour,pk=pk)
             hour.delete()
             return JsonResponse({'status': 'success','id':pk})
-    
+
+
+
+def order_detail(request,order_number):
+
+    #  retrieve order and ordered food objects and pass to the html page
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor=get_vendor(request))
+
+        context = {
+            'order': order,
+            'ordered_food': ordered_food,
+            'subtotal': order.get_total_by_vendor()['subtotal'],
+            'tax_data': order.get_total_by_vendor()['tax_dict'],
+            'grand_total': order.get_total_by_vendor()['grand_total'],
+        }
+    except:
+        return redirect('vendor')
+    return render(request,'vendor/order_detail.html',context)
+
+
+
+def my_orders(request):
+    vendor = Vendor.objects.get(user=request.user)
+    orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
+
+    context = {
+        'orders': orders,
+        
+    }
+    return render(request, 'vendor/my_orders.html', context)
 
 
 
